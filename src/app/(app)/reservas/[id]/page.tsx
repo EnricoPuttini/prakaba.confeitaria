@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { ReservationForm } from "../reservation-form";
 import { saveReservation } from "../actions";
 import { StatusSelect } from "./status-select";
@@ -49,11 +50,11 @@ export default async function EditarReservaPage({
     <>
       <PageHeader title={`Reserva #${order.order_number}`} description="Editar reserva." />
 
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-secondary-foreground">Status:</span>
-          <StatusSelect orderId={order.id} status={order.status} />
-        </div>
+      <div className="mb-6 flex items-center gap-2">
+        <Label htmlFor="status" className="text-secondary-foreground">
+          Status
+        </Label>
+        <StatusSelect orderId={order.id} status={order.status} />
       </div>
 
       <div className="mb-6">
@@ -62,17 +63,17 @@ export default async function EditarReservaPage({
             <CardTitle>Pagamento</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <div className="grid grid-cols-3 gap-4 text-sm">
-              <div>
-                <p className="text-secondary-foreground">Total do pedido</p>
+            <div className="grid grid-cols-1 divide-y divide-border rounded-md border border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+              <div className="p-4">
+                <p className="text-sm text-secondary-foreground">Total do pedido</p>
                 <p className="text-lg font-semibold text-foreground">{formatCurrency(order.total)}</p>
               </div>
-              <div>
-                <p className="text-secondary-foreground">Valor pago</p>
+              <div className="p-4">
+                <p className="text-sm text-secondary-foreground">Valor pago</p>
                 <p className="text-lg font-semibold text-success">{formatCurrency(totalPaid)}</p>
               </div>
-              <div>
-                <p className="text-secondary-foreground">Restante</p>
+              <div className="p-4">
+                <p className="text-sm text-secondary-foreground">Restante</p>
                 <p className={`text-lg font-semibold ${remaining > 0 ? "text-error" : "text-success"}`}>
                   {formatCurrency(remaining)}
                 </p>
@@ -82,26 +83,28 @@ export default async function EditarReservaPage({
             {remaining > 0 && <PaymentForm orderId={order.id} />}
 
             {payments && payments.length > 0 && (
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border text-left text-secondary-foreground">
-                    <th className="py-2 font-medium">Data</th>
-                    <th className="py-2 font-medium">Forma</th>
-                    <th className="py-2 font-medium">Valor</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {payments.map((payment) => (
-                    <tr key={payment.id} className="border-b border-border last:border-0">
-                      <td className="py-2 text-secondary-foreground">
-                        {new Date(payment.paid_at).toLocaleString("pt-BR")}
-                      </td>
-                      <td className="py-2 text-foreground">{METHOD_LABELS[payment.method] ?? payment.method}</td>
-                      <td className="py-2 text-foreground">{formatCurrency(payment.amount)}</td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-left text-secondary-foreground">
+                      <th className="py-2 font-medium">Data</th>
+                      <th className="py-2 font-medium">Forma</th>
+                      <th className="py-2 font-medium">Valor</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {payments.map((payment) => (
+                      <tr key={payment.id} className="border-b border-border last:border-0">
+                        <td className="py-2 text-secondary-foreground">
+                          {new Date(payment.paid_at).toLocaleString("pt-BR")}
+                        </td>
+                        <td className="py-2 text-foreground">{METHOD_LABELS[payment.method] ?? payment.method}</td>
+                        <td className="py-2 text-foreground">{formatCurrency(payment.amount)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </CardContent>
         </Card>

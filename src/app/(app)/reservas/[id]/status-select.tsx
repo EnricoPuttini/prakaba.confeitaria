@@ -21,6 +21,7 @@ export function StatusSelect({ orderId, status }: { orderId: string; status: str
 
   return (
     <Select
+      id="status"
       value={status}
       disabled={pending}
       onChange={(event) => {
