@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { ChefHat } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge, type badgeVariants } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { VariantProps } from "class-variance-authority";
 import { SuggestionsTable } from "./suggestions-table";
 
@@ -51,46 +53,54 @@ export default async function ProducaoPage() {
 
       <Card>
         <CardContent className="p-0">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-secondary-foreground">
-                <th className="px-6 py-3 font-medium">Criada em</th>
-                <th className="px-6 py-3 font-medium">Data planejada</th>
-                <th className="px-6 py-3 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders?.map((order) => (
-                <tr key={order.id} className="border-b border-border last:border-0">
-                  <td className="px-6 py-3">
-                    <Link
-                      href={`/producao/${order.id}`}
-                      className="font-medium text-foreground hover:text-primary hover:underline"
-                    >
-                      {new Date(order.created_at).toLocaleDateString("pt-BR")}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-3 text-secondary-foreground">
-                    {order.planned_date
-                      ? new Date(order.planned_date).toLocaleDateString("pt-BR")
-                      : "—"}
-                  </td>
-                  <td className="px-6 py-3">
-                    <Badge tone={STATUS_TONES[order.status] ?? "neutral"}>
-                      {STATUS_LABELS[order.status] ?? order.status}
-                    </Badge>
-                  </td>
-                </tr>
-              ))}
-              {!orders?.length && (
-                <tr>
-                  <td className="px-6 py-6 text-secondary-foreground" colSpan={3}>
-                    Nenhuma ordem de produção cadastrada ainda.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          {orders?.length ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-secondary-foreground">
+                    <th className="px-6 py-3 font-medium">Criada em</th>
+                    <th className="px-6 py-3 font-medium">Data planejada</th>
+                    <th className="px-6 py-3 font-medium">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.map((order) => (
+                    <tr key={order.id} className="border-b border-border last:border-0 hover:bg-surface-muted">
+                      <td className="px-6 py-3">
+                        <Link
+                          href={`/producao/${order.id}`}
+                          className="font-medium text-foreground hover:text-primary hover:underline"
+                        >
+                          {new Date(order.created_at).toLocaleDateString("pt-BR")}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-3 text-secondary-foreground">
+                        {order.planned_date
+                          ? new Date(order.planned_date).toLocaleDateString("pt-BR")
+                          : "—"}
+                      </td>
+                      <td className="px-6 py-3">
+                        <Badge tone={STATUS_TONES[order.status] ?? "neutral"}>
+                          {STATUS_LABELS[order.status] ?? order.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <EmptyState
+              icon={ChefHat}
+              title="Nenhuma ordem de produção cadastrada ainda"
+              description="Use a sugestão acima ou crie uma ordem manualmente."
+              action={
+                <Button asChild variant="secondary" size="sm">
+                  <Link href="/producao/novo">Nova ordem de produção</Link>
+                </Button>
+              }
+            />
+          )}
         </CardContent>
       </Card>
     </>

@@ -1,12 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { ProductionActionState } from "./actions";
 
 type Product = { id: string; name: string };
@@ -55,9 +58,17 @@ export function ProductionOrderForm({
 
   if (products.length === 0) {
     return (
-      <p className="text-sm text-secondary-foreground">
-        Cadastre ao menos um produto antes de criar uma ordem de produção.
-      </p>
+      <Card>
+        <EmptyState
+          title="Cadastre um produto primeiro"
+          description="É preciso ao menos um produto ativo para criar uma ordem de produção."
+          action={
+            <Button asChild variant="secondary" size="sm">
+              <Link href="/produtos/novo">Cadastrar produto</Link>
+            </Button>
+          }
+        />
+      </Card>
     );
   }
 
@@ -92,21 +103,28 @@ export function ProductionOrderForm({
             </div>
 
             {items.length === 0 && (
-              <p className="text-sm text-secondary-foreground">Nenhum produto adicionado ainda.</p>
+              <div className="rounded-md border border-dashed border-border p-4 text-center text-sm text-secondary-foreground">
+                Nenhum produto adicionado ainda.
+              </div>
             )}
 
             {items.map((item, index) => (
-              <div key={index} className="grid grid-cols-[1fr_8rem_auto] items-end gap-2">
-                <Select
-                  value={item.productId}
-                  onChange={(event) => updateItem(index, { productId: event.target.value })}
-                >
-                  {products.map((product) => (
-                    <option key={product.id} value={product.id}>
-                      {product.name}
-                    </option>
-                  ))}
-                </Select>
+              <div
+                key={index}
+                className="grid grid-cols-2 items-end gap-2 rounded-md border border-border p-3 sm:grid-cols-[1fr_8rem_auto] sm:border-0 sm:p-0"
+              >
+                <div className="col-span-2 sm:col-span-1">
+                  <Select
+                    value={item.productId}
+                    onChange={(event) => updateItem(index, { productId: event.target.value })}
+                  >
+                    {products.map((product) => (
+                      <option key={product.id} value={product.id}>
+                        {product.name}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
                 <Input
                   type="number"
                   step="1"
@@ -115,8 +133,14 @@ export function ProductionOrderForm({
                   value={item.plannedQuantity}
                   onChange={(event) => updateItem(index, { plannedQuantity: event.target.value })}
                 />
-                <Button type="button" variant="ghost" size="sm" onClick={() => removeItem(index)}>
-                  Remover
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeItem(index)}
+                  aria-label="Remover produto"
+                >
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
             ))}

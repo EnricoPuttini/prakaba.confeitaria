@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge, type badgeVariants } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import type { VariantProps } from "class-variance-authority";
 import { ProductionOrderForm } from "../production-order-form";
 import { saveProductionOrder } from "../actions";
 import { StartButton, CancelButton } from "./order-actions";
@@ -12,6 +15,13 @@ const STATUS_LABELS: Record<string, string> = {
   EM_PRODUCAO: "Em produção",
   CONCLUIDA: "Concluída",
   CANCELADA: "Cancelada",
+};
+
+const STATUS_TONES: Record<string, NonNullable<VariantProps<typeof badgeVariants>["tone"]>> = {
+  PLANEJADA: "neutral",
+  EM_PRODUCAO: "warning",
+  CONCLUIDA: "success",
+  CANCELADA: "error",
 };
 
 export default async function ProducaoDetalhePage({
@@ -46,7 +56,7 @@ export default async function ProducaoDetalhePage({
   return (
     <>
       <PageHeader
-        title={`Ordem de produção — ${STATUS_LABELS[order.status] ?? order.status}`}
+        title="Ordem de produção"
         description={
           order.planned_date
             ? `Planejada para ${new Date(order.planned_date).toLocaleDateString("pt-BR")}`
@@ -54,7 +64,10 @@ export default async function ProducaoDetalhePage({
         }
       />
 
-      <div className="mb-6 flex gap-2">
+      <div className="mb-6 flex flex-wrap items-center gap-3">
+        <Badge tone={STATUS_TONES[order.status] ?? "neutral"}>
+          {STATUS_LABELS[order.status] ?? order.status}
+        </Badge>
         {order.status === "PLANEJADA" && <StartButton orderId={order.id} />}
         {(order.status === "PLANEJADA" || order.status === "EM_PRODUCAO") && (
           <CancelButton orderId={order.id} />
@@ -85,26 +98,39 @@ export default async function ProducaoDetalhePage({
             <CardTitle>Itens</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-secondary-foreground">
-                  <th className="px-6 py-3 font-medium">Produto</th>
-                  <th className="px-6 py-3 font-medium">Planejado</th>
-                  <th className="px-6 py-3 font-medium">Produzido</th>
-                </tr>
-              </thead>
-              <tbody>
-                {itemsWithNames.map((item) => (
-                  <tr key={item.productId} className="border-b border-border last:border-0">
-                    <td className="px-6 py-3 text-foreground">{item.productName}</td>
-                    <td className="px-6 py-3 text-secondary-foreground">{item.plannedQuantity}</td>
-                    <td className="px-6 py-3 text-secondary-foreground">
-                      {item.producedQuantity ?? "—"}
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-secondary-foreground">
+                    <th className="px-6 py-3 font-medium">Produto</th>
+                    <th className="px-6 py-3 font-medium">Planejado</th>
+                    <th className="px-6 py-3 font-medium">Produzido</th>
+                    <th className="px-6 py-3 font-medium">Progresso</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {itemsWithNames.map((item) => (
+                    <tr key={item.productId} className="border-b border-border last:border-0">
+                      <td className="px-6 py-3 text-foreground">{item.productName}</td>
+                      <td className="px-6 py-3 text-secondary-foreground">{item.plannedQuantity}</td>
+                      <td className="px-6 py-3 text-secondary-foreground">
+                        {item.producedQuantity ?? "—"}
+                      </td>
+                      <td className="px-6 py-3">
+                        <Progress
+                          value={item.producedQuantity ?? 0}
+                          max={item.plannedQuantity}
+                          tone={
+                            (item.producedQuantity ?? 0) >= item.plannedQuantity ? "success" : "warning"
+                          }
+                          className="w-28"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       )}
