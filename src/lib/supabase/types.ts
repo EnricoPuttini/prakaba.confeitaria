@@ -2,6 +2,28 @@
 // Assim que houver um projeto Supabase conectado, substituir por:
 //   supabase gen types typescript --local > src/lib/supabase/types.ts
 export type UserRole = "OWNER" | "MANAGER" | "SALES" | "PRODUCTION" | "FINANCE";
+export type UnitOfMeasure = "UNIDADE" | "GRAMA" | "QUILOGRAMA" | "ML" | "LITRO";
+export type IngredientKind = "INGREDIENTE" | "INSUMO";
+export type MovementType =
+  | "ENTRADA"
+  | "SAIDA"
+  | "AJUSTE"
+  | "CONSUMO_PRODUCAO"
+  | "PERDA"
+  | "DEVOLUCAO";
+export type OrderType = "SALE" | "RESERVATION";
+export type OrderChannel = "PRESENCIAL" | "RESERVA" | "IFOOD" | "WHATSAPP" | "INSTAGRAM" | "OUTRO";
+export type OrderStatus =
+  | "PENDENTE"
+  | "CONFIRMADA"
+  | "EM_PRODUCAO"
+  | "PRONTA"
+  | "ENTREGUE"
+  | "CANCELADA";
+export type PaymentMethod = "PIX" | "CARTAO" | "DINHEIRO";
+export type OperationStatus = "ABERTA" | "FECHADA";
+export type ProductionStatus = "PLANEJADA" | "EM_PRODUCAO" | "CONCLUIDA" | "CANCELADA";
+export type FinancialStatus = "PENDENTE" | "PAGO";
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
@@ -90,11 +112,716 @@ export type Database = {
           },
         ];
       };
+      product_categories: {
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          name: string;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["product_categories"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "product_categories_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      suppliers: {
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          phone: string | null;
+          email: string | null;
+          notes: string | null;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          name: string;
+          phone?: string | null;
+          email?: string | null;
+          notes?: string | null;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["suppliers"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "suppliers_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      ingredients: {
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          kind: IngredientKind;
+          unit: UnitOfMeasure;
+          cost_per_unit: number;
+          current_stock: number;
+          minimum_stock: number | null;
+          supplier_id: string | null;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          name: string;
+          kind?: IngredientKind;
+          unit: UnitOfMeasure;
+          cost_per_unit?: number;
+          current_stock?: number;
+          minimum_stock?: number | null;
+          supplier_id?: string | null;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["ingredients"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "ingredients_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "ingredients_supplier_id_fkey";
+            columns: ["supplier_id"];
+            isOneToOne: false;
+            referencedRelation: "suppliers";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      products: {
+        Row: {
+          id: string;
+          organization_id: string;
+          category_id: string | null;
+          name: string;
+          sku: string | null;
+          description: string | null;
+          sale_price: number;
+          sale_unit: UnitOfMeasure;
+          minimum_stock: number | null;
+          production_time_minutes: number | null;
+          shelf_life_days: number | null;
+          photo_url: string | null;
+          active: boolean;
+          current_stock: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          category_id?: string | null;
+          name: string;
+          sku?: string | null;
+          description?: string | null;
+          sale_price: number;
+          sale_unit?: UnitOfMeasure;
+          minimum_stock?: number | null;
+          production_time_minutes?: number | null;
+          shelf_life_days?: number | null;
+          photo_url?: string | null;
+          active?: boolean;
+          current_stock?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["products"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "products_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "products_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "product_categories";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      recipes: {
+        Row: {
+          id: string;
+          organization_id: string;
+          product_id: string;
+          yield_quantity: number;
+          additional_cost: number;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          product_id: string;
+          yield_quantity: number;
+          additional_cost?: number;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["recipes"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "recipes_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "recipes_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: true;
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      recipe_items: {
+        Row: {
+          id: string;
+          recipe_id: string;
+          ingredient_id: string;
+          quantity: number;
+          unit: UnitOfMeasure;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          recipe_id: string;
+          ingredient_id: string;
+          quantity: number;
+          unit: UnitOfMeasure;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["recipe_items"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "recipe_items_recipe_id_fkey";
+            columns: ["recipe_id"];
+            isOneToOne: false;
+            referencedRelation: "recipes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "recipe_items_ingredient_id_fkey";
+            columns: ["ingredient_id"];
+            isOneToOne: false;
+            referencedRelation: "ingredients";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      inventory_movements: {
+        Row: {
+          id: string;
+          organization_id: string;
+          ingredient_id: string;
+          type: MovementType;
+          quantity: number;
+          unit: UnitOfMeasure;
+          reason: string | null;
+          reference: string | null;
+          user_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          ingredient_id: string;
+          type: MovementType;
+          quantity: number;
+          unit: UnitOfMeasure;
+          reason?: string | null;
+          reference?: string | null;
+          user_id?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["inventory_movements"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "inventory_movements_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "inventory_movements_ingredient_id_fkey";
+            columns: ["ingredient_id"];
+            isOneToOne: false;
+            referencedRelation: "ingredients";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      customers: {
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          phone: string | null;
+          address: string | null;
+          birth_date: string | null;
+          notes: string | null;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          name: string;
+          phone?: string | null;
+          address?: string | null;
+          birth_date?: string | null;
+          notes?: string | null;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["customers"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "customers_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      orders: {
+        Row: {
+          id: string;
+          order_number: number;
+          organization_id: string;
+          order_type: OrderType;
+          channel: OrderChannel;
+          customer_id: string | null;
+          status: OrderStatus;
+          order_date: string;
+          scheduled_at: string | null;
+          subtotal: number;
+          discount: number;
+          total: number;
+          notes: string | null;
+          responsible_id: string | null;
+          operation_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          order_type: OrderType;
+          channel: OrderChannel;
+          customer_id?: string | null;
+          status?: OrderStatus;
+          order_date?: string;
+          scheduled_at?: string | null;
+          subtotal?: number;
+          discount?: number;
+          total?: number;
+          notes?: string | null;
+          responsible_id?: string | null;
+          operation_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "orders_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_operation_id_fkey";
+            columns: ["operation_id"];
+            isOneToOne: false;
+            referencedRelation: "sales_operations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      order_items: {
+        Row: {
+          id: string;
+          order_id: string;
+          product_id: string;
+          quantity: number;
+          unit_price: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          order_id: string;
+          product_id: string;
+          quantity: number;
+          unit_price: number;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["order_items"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      payments: {
+        Row: {
+          id: string;
+          organization_id: string;
+          order_id: string;
+          amount: number;
+          method: PaymentMethod;
+          paid_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          order_id: string;
+          amount: number;
+          method: PaymentMethod;
+          paid_at?: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["payments"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "payments_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payments_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      sales_operations: {
+        Row: {
+          id: string;
+          organization_id: string;
+          location: string | null;
+          status: OperationStatus;
+          opened_by: string | null;
+          opened_at: string;
+          closed_at: string | null;
+          opening_cash: number;
+          expected_cash: number | null;
+          closing_cash_counted: number | null;
+          cash_difference: number | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          location?: string | null;
+          status?: OperationStatus;
+          opened_by?: string | null;
+          opened_at?: string;
+          closed_at?: string | null;
+          opening_cash?: number;
+          expected_cash?: number | null;
+          closing_cash_counted?: number | null;
+          cash_difference?: number | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["sales_operations"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "sales_operations_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      production_orders: {
+        Row: {
+          id: string;
+          organization_id: string;
+          status: ProductionStatus;
+          planned_date: string | null;
+          notes: string | null;
+          responsible_id: string | null;
+          started_at: string | null;
+          completed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          status?: ProductionStatus;
+          planned_date?: string | null;
+          notes?: string | null;
+          responsible_id?: string | null;
+          started_at?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["production_orders"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "production_orders_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      production_items: {
+        Row: {
+          id: string;
+          production_order_id: string;
+          product_id: string;
+          planned_quantity: number;
+          produced_quantity: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          production_order_id: string;
+          product_id: string;
+          planned_quantity: number;
+          produced_quantity?: number | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["production_items"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "production_items_production_order_id_fkey";
+            columns: ["production_order_id"];
+            isOneToOne: false;
+            referencedRelation: "production_orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "production_items_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      financial_categories: {
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          name: string;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["financial_categories"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "financial_categories_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      accounts_payable: {
+        Row: {
+          id: string;
+          organization_id: string;
+          description: string;
+          supplier_id: string | null;
+          category_id: string | null;
+          amount: number;
+          due_date: string;
+          paid_at: string | null;
+          status: FinancialStatus;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          description: string;
+          supplier_id?: string | null;
+          category_id?: string | null;
+          amount: number;
+          due_date: string;
+          paid_at?: string | null;
+          status?: FinancialStatus;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["accounts_payable"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "accounts_payable_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "accounts_payable_supplier_id_fkey";
+            columns: ["supplier_id"];
+            isOneToOne: false;
+            referencedRelation: "suppliers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "accounts_payable_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "financial_categories";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      accounts_receivable: {
+        Row: {
+          id: string;
+          organization_id: string;
+          description: string;
+          customer_id: string | null;
+          order_id: string | null;
+          amount: number;
+          due_date: string | null;
+          paid_at: string | null;
+          payment_method: PaymentMethod | null;
+          status: FinancialStatus;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          description: string;
+          customer_id?: string | null;
+          order_id?: string | null;
+          amount: number;
+          due_date?: string | null;
+          paid_at?: string | null;
+          payment_method?: PaymentMethod | null;
+          status?: FinancialStatus;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["accounts_receivable"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "accounts_receivable_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "accounts_receivable_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "accounts_receivable_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
       create_organization_with_owner: {
         Args: { org_name: string; owner_full_name: string };
+        Returns: string;
+      };
+      accept_invitation: {
+        Args: Record<PropertyKey, never>;
         Returns: string;
       };
       log_audit_event: {
@@ -107,9 +834,111 @@ export type Database = {
         };
         Returns: undefined;
       };
+      convert_quantity: {
+        Args: { p_quantity: number; p_from_unit: UnitOfMeasure; p_to_unit: UnitOfMeasure };
+        Returns: number;
+      };
+      register_inventory_movement: {
+        Args: {
+          p_ingredient_id: string;
+          p_type: MovementType;
+          p_quantity: number;
+          p_unit: UnitOfMeasure;
+          p_reason?: string | null;
+          p_reference?: string | null;
+        };
+        Returns: string;
+      };
+      calculate_product_cost: {
+        Args: { p_product_id: string };
+        Returns: number | null;
+      };
+      save_recipe: {
+        Args: {
+          p_product_id: string;
+          p_yield_quantity: number;
+          p_additional_cost: number;
+          p_notes: string | null;
+          p_items: Json;
+        };
+        Returns: string;
+      };
+      save_reservation: {
+        Args: {
+          p_order_id: string | null;
+          p_customer_id: string | null;
+          p_channel: OrderChannel;
+          p_scheduled_at: string | null;
+          p_discount: number;
+          p_notes: string | null;
+          p_items: Json;
+        };
+        Returns: string;
+      };
+      register_payment: {
+        Args: { p_order_id: string; p_amount: number; p_method: PaymentMethod };
+        Returns: string;
+      };
+      open_operation: {
+        Args: { p_location: string | null; p_opening_cash: number; p_notes: string | null };
+        Returns: string;
+      };
+      close_operation: {
+        Args: { p_operation_id: string; p_closing_cash_counted: number; p_notes: string | null };
+        Returns: string;
+      };
+      create_sale: {
+        Args: {
+          p_operation_id: string;
+          p_channel: OrderChannel;
+          p_customer_id: string | null;
+          p_payment_method: PaymentMethod;
+          p_items: Json;
+        };
+        Returns: string;
+      };
+      get_committed_stock: {
+        Args: { p_product_id: string };
+        Returns: number;
+      };
+      save_production_order: {
+        Args: {
+          p_order_id: string | null;
+          p_planned_date: string | null;
+          p_notes: string | null;
+          p_items: Json;
+        };
+        Returns: string;
+      };
+      complete_production_order: {
+        Args: { p_order_id: string; p_produced_quantities: Json };
+        Returns: string;
+      };
+      get_production_suggestions: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          product_id: string;
+          product_name: string;
+          reserved_demand: number;
+          avg_daily_sales: number;
+          current_stock: number;
+          committed_stock: number;
+          available_stock: number;
+          suggested_quantity: number;
+        }[];
+      };
     };
     Enums: {
       user_role: UserRole;
+      unit_of_measure: UnitOfMeasure;
+      ingredient_kind: IngredientKind;
+      movement_type: MovementType;
+      order_type: OrderType;
+      order_channel: OrderChannel;
+      order_status: OrderStatus;
+      payment_method: PaymentMethod;
+      operation_status: OperationStatus;
+      production_status: ProductionStatus;
     };
     CompositeTypes: Record<string, never>;
   };

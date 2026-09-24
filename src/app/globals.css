@@ -1,38 +1,69 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fbfaf8;
+  --background: #faf8f5;
   --surface: #ffffff;
-  --foreground: #1a1f2b;
-  --secondary-foreground: #5b6b7c;
-  --primary: #1c3144;
-  --primary-hover: #132330;
+  --surface-muted: #f3efe8;
+  --foreground: #1c2430;
+  --secondary-foreground: #5f6b7a;
+  --primary: #062855;
+  --primary-hover: #041c3d;
+  --primary-subtle: #e8edf0;
   --primary-foreground: #fbfaf8;
-  --border: #e6e4df;
+  --border: #e6e1d8;
   --success: #3f7a5d;
+  --success-subtle: #e8f2ec;
   --warning: #b8862e;
+  --warning-subtle: #f7eede;
   --error: #b4443b;
-  --radius: 0.75rem;
+  --error-subtle: #f7e8e6;
 
-  /* Pilha de fontes sem dependência de rede: sans-serif para UI, serifada
-     para elementos de marca (títulos, tela de login), inspirada na logo. */
-  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-brand: Georgia, "Times New Roman", "Noto Serif", serif;
+  /* Escala de raio: elementos pequenos (badges/inputs) a superfícies grandes (cards/modais). */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+
+  /* Escala de elevação: sombras suaves e quentes (não cinza puro) para combinar com o fundo creme. */
+  --shadow-xs: 0 1px 2px 0 rgb(28 20 10 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(28 20 10 / 0.06), 0 1px 2px -1px rgb(28 20 10 / 0.05);
+  --shadow-md: 0 4px 10px -2px rgb(28 20 10 / 0.08), 0 2px 4px -2px rgb(28 20 10 / 0.05);
+  --shadow-lg: 0 12px 24px -6px rgb(28 20 10 / 0.12), 0 4px 8px -4px rgb(28 20 10 / 0.06);
+
+  /* Tipografia: Playfair Display para elementos de marca/títulos, Inter para
+     interface — ambas self-hosted via @fontsource (sem dependência de CDN externo). */
+  --font-sans: "Inter", ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-brand: "Playfair Display", Georgia, "Times New Roman", "Noto Serif", serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
   --color-foreground: var(--foreground);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
+  --color-primary-subtle: var(--primary-subtle);
   --color-primary-foreground: var(--primary-foreground);
   --color-border: var(--border);
   --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
   --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
   --color-error: var(--error);
-  --radius-lg: var(--radius);
+  --color-error-subtle: var(--error-subtle);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
   --font-sans: var(--font-sans);
   --font-brand: var(--font-brand);
 }

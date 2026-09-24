@@ -1,6 +1,16 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+function ConfigError() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background p-6">
+      <p className="text-error">
+        Não foi possível configurar seu acesso. Tente sair e entrar novamente.
+      </p>
+    </div>
+  );
+}
+
 export default async function OnboardingPage() {
   const supabase = await createClient();
 
@@ -22,11 +32,26 @@ export default async function OnboardingPage() {
     redirect("/dashboard");
   }
 
+  // Convite: organization_id/role/full_name vêm de app_metadata, gravados
+  // pela service role ao enviar o convite — o usuário não consegue alterá-los.
+  const invitedOrgId = user.app_metadata?.organization_id as string | undefined;
+
+  if (invitedOrgId) {
+    const { error } = await supabase.rpc("accept_invitation");
+
+    if (error && !error.message.includes("already belongs")) {
+      return <ConfigError />;
+    }
+
+    redirect("/dashboard");
+  }
+
+  // Cadastro próprio: organization_name/full_name vêm de user_metadata,
+  // preenchidos no formulário de signup.
   const organizationName = (user.user_metadata?.organization_name as string | undefined)?.trim();
   const fullName = (user.user_metadata?.full_name as string | undefined)?.trim();
 
   if (!organizationName || !fullName) {
-    // Cadastro incompleto (ex: usuário criado fora do fluxo de signup padrão).
     redirect("/login?setupIncomplete=1");
   }
 
@@ -36,13 +61,7 @@ export default async function OnboardingPage() {
   });
 
   if (error && !error.message.includes("already belongs")) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-6">
-        <p className="text-error">
-          Não foi possível configurar sua confeitaria. Tente sair e entrar novamente.
-        </p>
-      </div>
-    );
+    return <ConfigError />;
   }
 
   redirect("/dashboard");

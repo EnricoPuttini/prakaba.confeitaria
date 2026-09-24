@@ -79,15 +79,17 @@ tests/
 
 ## Roadmap
 
-O desenvolvimento segue fases incrementais:
+Todas as fases da V1 estão concluídas:
 
-1. **Fundação** (concluída) — autenticação, organizações, roles, RLS, layout, design system
-2. Produtos + Estoque
-3. Clientes + Reservas
-4. PDV (venda presencial)
-5. Produção
-6. Financeiro
-7. Dashboard + Relatórios
+1. **Fundação** — autenticação, organizações, roles, RLS, layout, design system, convite de usuários
+2. **Produtos + Estoque** — categorias, ingredientes/insumos, fornecedores, movimentações, fichas técnicas com custo
+3. **Clientes + Reservas** — cadastro de clientes, reservas com itens dinâmicos, status e pagamento parcial
+4. **PDV (venda presencial)** — abertura/fechamento de caixa, venda rápida, diferença de caixa
+5. **Produção** — ordens de produção, sugestão por demanda, consumo automático de ingredientes via ficha técnica
+6. **Financeiro** — contas a pagar e a receber, categorias, reservas com saldo pendente
+7. **Dashboard + Relatórios** — indicadores por período, gráficos (faturamento, canal, pagamento, produtos), exportação CSV
+
+Próximos passos possíveis (fora do escopo da V1): integração real de WhatsApp para notificações, emissão fiscal, app mobile nativo.
 
 ## Segurança
 
