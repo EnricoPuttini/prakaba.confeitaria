@@ -22,21 +22,21 @@ export function OperationSummaryCard({ summary }: { summary: OperationSummary })
         <CardTitle>Resumo</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
-        <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
-          <div>
-            <p className="text-secondary-foreground">Vendas</p>
+        <div className="grid grid-cols-2 divide-x divide-y divide-border rounded-md border border-border sm:grid-cols-4 sm:divide-y-0">
+          <div className="p-4">
+            <p className="text-sm text-secondary-foreground">Vendas</p>
             <p className="text-lg font-semibold text-foreground">{summary.salesCount}</p>
           </div>
-          <div>
-            <p className="text-secondary-foreground">Unidades</p>
+          <div className="p-4">
+            <p className="text-sm text-secondary-foreground">Unidades</p>
             <p className="text-lg font-semibold text-foreground">{summary.itemsCount}</p>
           </div>
-          <div>
-            <p className="text-secondary-foreground">Faturamento</p>
+          <div className="p-4">
+            <p className="text-sm text-secondary-foreground">Faturamento</p>
             <p className="text-lg font-semibold text-foreground">{formatCurrency(summary.revenue)}</p>
           </div>
-          <div>
-            <p className="text-secondary-foreground">Ticket médio</p>
+          <div className="p-4">
+            <p className="text-sm text-secondary-foreground">Ticket médio</p>
             <p className="text-lg font-semibold text-foreground">{formatCurrency(summary.averageTicket)}</p>
           </div>
         </div>

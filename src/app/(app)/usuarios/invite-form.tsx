@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { inviteMember, type InviteActionState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,7 +52,9 @@ export function InviteForm({ canInviteManager }: { canInviteManager: boolean }) 
           </div>
           {state.error && <p className="text-sm text-error">{state.error}</p>}
           {state.success && (
-            <p className="text-sm text-success">Convite enviado por e-mail.</p>
+            <p className="flex items-center gap-1.5 text-sm text-success">
+              <CheckCircle2 className="h-4 w-4" /> Convite enviado por e-mail.
+            </p>
           )}
         </CardContent>
         <CardContent className="pt-0">

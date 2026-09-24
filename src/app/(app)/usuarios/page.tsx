@@ -1,7 +1,10 @@
+import { UserCog } from "lucide-react";
 import { requireCurrentProfile } from "@/lib/auth/current-profile";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
 import { InviteForm } from "./invite-form";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -38,39 +41,36 @@ export default async function UsuariosPage() {
 
       <Card>
         <CardContent className="p-0">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-secondary-foreground">
-                <th className="px-6 py-3 font-medium">Nome</th>
-                <th className="px-6 py-3 font-medium">Papel</th>
-                <th className="px-6 py-3 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {members?.map((member) => (
-                <tr key={member.id} className="border-b border-border last:border-0">
-                  <td className="px-6 py-3 text-foreground">{member.full_name}</td>
-                  <td className="px-6 py-3 text-foreground">
-                    {ROLE_LABELS[member.role] ?? member.role}
-                  </td>
-                  <td className="px-6 py-3">
-                    {member.active ? (
-                      <span className="text-success">Ativo</span>
-                    ) : (
-                      <span className="text-secondary-foreground">Inativo</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {!members?.length && (
-                <tr>
-                  <td className="px-6 py-6 text-secondary-foreground" colSpan={3}>
-                    Nenhum usuário encontrado.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          {members?.length ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-secondary-foreground">
+                    <th className="px-6 py-3 font-medium">Nome</th>
+                    <th className="px-6 py-3 font-medium">Papel</th>
+                    <th className="px-6 py-3 font-medium">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {members.map((member) => (
+                    <tr key={member.id} className="border-b border-border last:border-0">
+                      <td className="px-6 py-3 text-foreground">{member.full_name}</td>
+                      <td className="px-6 py-3 text-foreground">
+                        {ROLE_LABELS[member.role] ?? member.role}
+                      </td>
+                      <td className="px-6 py-3">
+                        <Badge tone={member.active ? "success" : "neutral"}>
+                          {member.active ? "Ativo" : "Inativo"}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <EmptyState icon={UserCog} title="Nenhum usuário encontrado" />
+          )}
         </CardContent>
       </Card>
       <p className="mt-4 text-xs text-secondary-foreground">
