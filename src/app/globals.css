@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fbfaf8;
+  --surface: #ffffff;
+  --foreground: #1a1f2b;
+  --secondary-foreground: #5b6b7c;
+  --primary: #1c3144;
+  --primary-hover: #132330;
+  --primary-foreground: #fbfaf8;
+  --border: #e6e4df;
+  --success: #3f7a5d;
+  --warning: #b8862e;
+  --error: #b4443b;
+  --radius: 0.75rem;
+
+  /* Pilha de fontes sem dependência de rede: sans-serif para UI, serifada
+     para elementos de marca (títulos, tela de login), inspirada na logo. */
+  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-brand: Georgia, "Times New Roman", "Noto Serif", serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --radius-lg: var(--radius);
+  --font-sans: var(--font-sans);
+  --font-brand: var(--font-brand);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
