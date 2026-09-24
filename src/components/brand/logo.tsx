@@ -1,19 +1,28 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-// Nenhum arquivo de logo foi fornecido ao projeto; este wordmark tipográfico
-// segue a identidade descrita (serifada, azul-marinho, subtítulo suave) até
-// que o arquivo oficial da logo seja adicionado em public/ e usado via <Image>.
 export function Logo({ className, subtitle = true }: { className?: string; subtitle?: boolean }) {
+  if (subtitle) {
+    return (
+      <Image
+        src="/logo-full.png"
+        alt="PRAKABÁ — cookies e brownies"
+        width={1150}
+        height={338}
+        priority
+        className={cn("h-12 w-auto", className)}
+      />
+    );
+  }
+
   return (
-    <div className={cn("flex flex-col", className)}>
-      <span className="font-brand text-2xl font-semibold tracking-wide text-primary">
-        PRAKABÁ
-      </span>
-      {subtitle && (
-        <span className="text-xs tracking-wide text-secondary-foreground">
-          cookies e brownies
-        </span>
-      )}
-    </div>
+    <Image
+      src="/logo-mark.png"
+      alt="PRAKABÁ"
+      width={1150}
+      height={235}
+      priority
+      className={cn("h-8 w-auto", className)}
+    />
   );
 }

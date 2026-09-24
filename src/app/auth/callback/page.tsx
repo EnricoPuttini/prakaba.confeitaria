@@ -46,7 +46,7 @@ export default function AuthCallbackPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-6 text-center">
-      <Logo subtitle={false} className="items-center" />
+      <Logo subtitle={false} className="h-14 w-auto" />
       {timedOut ? (
         <>
           <p className="text-sm text-error">Não foi possível confirmar o acesso.</p>
