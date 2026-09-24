@@ -28,7 +28,7 @@ export function PeriodFilter({
             className="peer sr-only"
             onChange={() => setPreset(option)}
           />
-          <span className="inline-block rounded-lg border border-border px-3 py-2 text-sm text-secondary-foreground peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground">
+          <span className="inline-block rounded-md border border-border bg-surface px-3 py-2 text-sm text-secondary-foreground shadow-xs transition-colors peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground">
             {DATE_RANGE_LABELS[option]}
           </span>
         </label>

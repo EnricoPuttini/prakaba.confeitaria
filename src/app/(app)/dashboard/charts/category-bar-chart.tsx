@@ -1,7 +1,9 @@
 "use client";
 
+import { PieChart } from "lucide-react";
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { CHART_TEXT_COLOR } from "@/lib/charts/colors";
+import { EmptyState } from "@/components/ui/empty-state";
 
 type Item = { key: string; label: string; value: number; color: string };
 
@@ -11,7 +13,7 @@ function formatCurrency(value: number) {
 
 export function CategoryBarChart({ items }: { items: Item[] }) {
   if (items.length === 0) {
-    return <p className="py-10 text-center text-sm text-secondary-foreground">Sem dados no período.</p>;
+    return <EmptyState icon={PieChart} title="Sem dados no período" />;
   }
 
   return (

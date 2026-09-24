@@ -1,11 +1,13 @@
 "use client";
 
+import { ShoppingBag } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { CHART_TEXT_COLOR, SEQUENTIAL_BLUE } from "@/lib/charts/colors";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export function TopProductsChart({ data }: { data: { productName: string; quantity: number }[] }) {
   if (data.length === 0) {
-    return <p className="py-10 text-center text-sm text-secondary-foreground">Sem vendas no período.</p>;
+    return <EmptyState icon={ShoppingBag} title="Sem vendas no período" />;
   }
 
   return (

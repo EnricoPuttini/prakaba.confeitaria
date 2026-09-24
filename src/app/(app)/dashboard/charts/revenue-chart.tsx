@@ -1,7 +1,9 @@
 "use client";
 
+import { LineChart as LineChartIcon } from "lucide-react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { CHART_GRID_COLOR, CHART_TEXT_COLOR, SEQUENTIAL_BLUE } from "@/lib/charts/colors";
+import { EmptyState } from "@/components/ui/empty-state";
 
 function formatCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -9,7 +11,13 @@ function formatCurrency(value: number) {
 
 export function RevenueChart({ data }: { data: { date: string; revenue: number }[] }) {
   if (data.length === 0) {
-    return <p className="py-10 text-center text-sm text-secondary-foreground">Sem vendas no período.</p>;
+    return (
+      <EmptyState
+        icon={LineChartIcon}
+        title="Sem vendas no período"
+        description="O faturamento diário aparece aqui assim que houver vendas ou reservas."
+      />
+    );
   }
 
   return (
