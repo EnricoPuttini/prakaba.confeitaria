@@ -21,6 +21,7 @@ export type OrderStatus =
   | "ENTREGUE"
   | "CANCELADA";
 export type PaymentMethod = "PIX" | "CARTAO" | "DINHEIRO";
+export type OperationStatus = "ABERTA" | "FECHADA";
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
@@ -440,6 +441,7 @@ export type Database = {
           total: number;
           notes: string | null;
           responsible_id: string | null;
+          operation_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -457,6 +459,7 @@ export type Database = {
           total?: number;
           notes?: string | null;
           responsible_id?: string | null;
+          operation_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -474,6 +477,13 @@ export type Database = {
             columns: ["customer_id"];
             isOneToOne: false;
             referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_operation_id_fkey";
+            columns: ["operation_id"];
+            isOneToOne: false;
+            referencedRelation: "sales_operations";
             referencedColumns: ["id"];
           },
         ];
@@ -550,6 +560,50 @@ export type Database = {
           },
         ];
       };
+      sales_operations: {
+        Row: {
+          id: string;
+          organization_id: string;
+          location: string | null;
+          status: OperationStatus;
+          opened_by: string | null;
+          opened_at: string;
+          closed_at: string | null;
+          opening_cash: number;
+          expected_cash: number | null;
+          closing_cash_counted: number | null;
+          cash_difference: number | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          location?: string | null;
+          status?: OperationStatus;
+          opened_by?: string | null;
+          opened_at?: string;
+          closed_at?: string | null;
+          opening_cash?: number;
+          expected_cash?: number | null;
+          closing_cash_counted?: number | null;
+          cash_difference?: number | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["sales_operations"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "sales_operations_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -616,6 +670,24 @@ export type Database = {
         Args: { p_order_id: string; p_amount: number; p_method: PaymentMethod };
         Returns: string;
       };
+      open_operation: {
+        Args: { p_location: string | null; p_opening_cash: number; p_notes: string | null };
+        Returns: string;
+      };
+      close_operation: {
+        Args: { p_operation_id: string; p_closing_cash_counted: number; p_notes: string | null };
+        Returns: string;
+      };
+      create_sale: {
+        Args: {
+          p_operation_id: string;
+          p_channel: OrderChannel;
+          p_customer_id: string | null;
+          p_payment_method: PaymentMethod;
+          p_items: Json;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       user_role: UserRole;
@@ -626,6 +698,7 @@ export type Database = {
       order_channel: OrderChannel;
       order_status: OrderStatus;
       payment_method: PaymentMethod;
+      operation_status: OperationStatus;
     };
     CompositeTypes: Record<string, never>;
   };
