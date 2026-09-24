@@ -11,6 +11,16 @@ export type MovementType =
   | "CONSUMO_PRODUCAO"
   | "PERDA"
   | "DEVOLUCAO";
+export type OrderType = "SALE" | "RESERVATION";
+export type OrderChannel = "PRESENCIAL" | "RESERVA" | "IFOOD" | "WHATSAPP" | "INSTAGRAM" | "OUTRO";
+export type OrderStatus =
+  | "PENDENTE"
+  | "CONFIRMADA"
+  | "EM_PRODUCAO"
+  | "PRONTA"
+  | "ENTREGUE"
+  | "CANCELADA";
+export type PaymentMethod = "PIX" | "CARTAO" | "DINHEIRO";
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
@@ -378,6 +388,168 @@ export type Database = {
           },
         ];
       };
+      customers: {
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          phone: string | null;
+          address: string | null;
+          birth_date: string | null;
+          notes: string | null;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          name: string;
+          phone?: string | null;
+          address?: string | null;
+          birth_date?: string | null;
+          notes?: string | null;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["customers"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "customers_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      orders: {
+        Row: {
+          id: string;
+          order_number: number;
+          organization_id: string;
+          order_type: OrderType;
+          channel: OrderChannel;
+          customer_id: string | null;
+          status: OrderStatus;
+          order_date: string;
+          scheduled_at: string | null;
+          subtotal: number;
+          discount: number;
+          total: number;
+          notes: string | null;
+          responsible_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          order_type: OrderType;
+          channel: OrderChannel;
+          customer_id?: string | null;
+          status?: OrderStatus;
+          order_date?: string;
+          scheduled_at?: string | null;
+          subtotal?: number;
+          discount?: number;
+          total?: number;
+          notes?: string | null;
+          responsible_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["orders"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "orders_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "orders_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      order_items: {
+        Row: {
+          id: string;
+          order_id: string;
+          product_id: string;
+          quantity: number;
+          unit_price: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          order_id: string;
+          product_id: string;
+          quantity: number;
+          unit_price: number;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["order_items"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      payments: {
+        Row: {
+          id: string;
+          organization_id: string;
+          order_id: string;
+          amount: number;
+          method: PaymentMethod;
+          paid_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          order_id: string;
+          amount: number;
+          method: PaymentMethod;
+          paid_at?: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["payments"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "payments_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payments_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -428,12 +600,32 @@ export type Database = {
         };
         Returns: string;
       };
+      save_reservation: {
+        Args: {
+          p_order_id: string | null;
+          p_customer_id: string | null;
+          p_channel: OrderChannel;
+          p_scheduled_at: string | null;
+          p_discount: number;
+          p_notes: string | null;
+          p_items: Json;
+        };
+        Returns: string;
+      };
+      register_payment: {
+        Args: { p_order_id: string; p_amount: number; p_method: PaymentMethod };
+        Returns: string;
+      };
     };
     Enums: {
       user_role: UserRole;
       unit_of_measure: UnitOfMeasure;
       ingredient_kind: IngredientKind;
       movement_type: MovementType;
+      order_type: OrderType;
+      order_channel: OrderChannel;
+      order_status: OrderStatus;
+      payment_method: PaymentMethod;
     };
     CompositeTypes: Record<string, never>;
   };
