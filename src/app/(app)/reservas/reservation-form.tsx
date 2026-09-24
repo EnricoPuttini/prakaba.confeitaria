@@ -167,7 +167,7 @@ export function ReservationForm({
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <Label>Produtos</Label>
-              <Button type="button" variant="outline" size="sm" onClick={addItem}>
+              <Button type="button" variant="secondary" size="sm" onClick={addItem}>
                 Adicionar produto
               </Button>
             </div>

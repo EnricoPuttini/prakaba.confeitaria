@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge, type badgeVariants } from "@/components/ui/badge";
+import type { VariantProps } from "class-variance-authority";
 import { SuggestionsTable } from "./suggestions-table";
 
 const STATUS_LABELS: Record<string, string> = {
@@ -12,11 +14,11 @@ const STATUS_LABELS: Record<string, string> = {
   CANCELADA: "Cancelada",
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  PLANEJADA: "text-secondary-foreground",
-  EM_PRODUCAO: "text-warning",
-  CONCLUIDA: "text-success",
-  CANCELADA: "text-error",
+const STATUS_TONES: Record<string, NonNullable<VariantProps<typeof badgeVariants>["tone"]>> = {
+  PLANEJADA: "neutral",
+  EM_PRODUCAO: "warning",
+  CONCLUIDA: "success",
+  CANCELADA: "error",
 };
 
 export default async function ProducaoPage() {
@@ -73,8 +75,10 @@ export default async function ProducaoPage() {
                       ? new Date(order.planned_date).toLocaleDateString("pt-BR")
                       : "—"}
                   </td>
-                  <td className={`px-6 py-3 font-medium ${STATUS_COLORS[order.status] ?? ""}`}>
-                    {STATUS_LABELS[order.status] ?? order.status}
+                  <td className="px-6 py-3">
+                    <Badge tone={STATUS_TONES[order.status] ?? "neutral"}>
+                      {STATUS_LABELS[order.status] ?? order.status}
+                    </Badge>
                   </td>
                 </tr>
               ))}

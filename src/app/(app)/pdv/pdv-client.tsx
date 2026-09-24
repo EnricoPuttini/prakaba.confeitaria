@@ -117,7 +117,7 @@ function SaleCart({
               <div className="flex items-center gap-3">
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   size="icon"
                   className="h-10 w-10 text-lg"
                   onClick={() => setQuantity(product.id, quantity - 1)}
@@ -128,7 +128,7 @@ function SaleCart({
                 <span className="w-6 text-center text-lg font-semibold text-foreground">{quantity}</span>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   size="icon"
                   className="h-10 w-10 text-lg"
                   onClick={() => setQuantity(product.id, quantity + 1)}
@@ -157,7 +157,7 @@ function SaleCart({
             key={option.value}
             type="button"
             size="lg"
-            variant={method === option.value ? "default" : "outline"}
+            variant={method === option.value ? "primary" : "secondary"}
             onClick={() => setMethod(option.value)}
           >
             {option.label}

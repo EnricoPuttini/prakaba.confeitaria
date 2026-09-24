@@ -41,7 +41,7 @@ export function PeriodFilter({
         </>
       )}
 
-      <Button type="submit" variant="outline" size="sm">
+      <Button type="submit" variant="secondary" size="sm">
         Aplicar
       </Button>
     </form>

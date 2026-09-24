@@ -12,7 +12,7 @@ export function ActiveToggle({ customerId, active }: { customerId: string; activ
   return (
     <Button
       type="button"
-      variant="outline"
+      variant="secondary"
       size="sm"
       disabled={pending}
       onClick={() => {

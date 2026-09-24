@@ -100,7 +100,7 @@ export function RecipeForm({
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <Label>Ingredientes da receita</Label>
-          <Button type="button" variant="outline" size="sm" onClick={addItem}>
+          <Button type="button" variant="secondary" size="sm" onClick={addItem}>
             Adicionar ingrediente
           </Button>
         </div>

@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge, type badgeVariants } from "@/components/ui/badge";
+import type { VariantProps } from "class-variance-authority";
 
 const STATUS_LABELS: Record<string, string> = {
   PENDENTE: "Pendente",
@@ -13,13 +15,13 @@ const STATUS_LABELS: Record<string, string> = {
   CANCELADA: "Cancelada",
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  PENDENTE: "text-secondary-foreground",
-  CONFIRMADA: "text-primary",
-  EM_PRODUCAO: "text-warning",
-  PRONTA: "text-warning",
-  ENTREGUE: "text-success",
-  CANCELADA: "text-error",
+const STATUS_TONES: Record<string, NonNullable<VariantProps<typeof badgeVariants>["tone"]>> = {
+  PENDENTE: "neutral",
+  CONFIRMADA: "primary",
+  EM_PRODUCAO: "warning",
+  PRONTA: "warning",
+  ENTREGUE: "success",
+  CANCELADA: "error",
 };
 
 function formatCurrency(value: number) {
@@ -79,8 +81,10 @@ export default async function ReservasPage() {
                   <td className="px-6 py-3 text-secondary-foreground">
                     {order.scheduled_at ? new Date(order.scheduled_at).toLocaleString("pt-BR") : "—"}
                   </td>
-                  <td className={`px-6 py-3 font-medium ${STATUS_COLORS[order.status] ?? ""}`}>
-                    {STATUS_LABELS[order.status] ?? order.status}
+                  <td className="px-6 py-3">
+                    <Badge tone={STATUS_TONES[order.status] ?? "neutral"}>
+                      {STATUS_LABELS[order.status] ?? order.status}
+                    </Badge>
                   </td>
                   <td className="px-6 py-3 text-foreground">{formatCurrency(order.total)}</td>
                 </tr>

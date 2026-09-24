@@ -49,7 +49,7 @@ export function SuggestionsTable({ suggestions }: { suggestions: Suggestion[] })
                   {formatQuantity(suggestion.suggested_quantity)}
                 </td>
                 <td className="px-6 py-3">
-                  <Button asChild variant="outline" size="sm">
+                  <Button asChild variant="secondary" size="sm">
                     <Link
                       href={`/producao/novo?productId=${suggestion.product_id}&quantity=${suggestion.suggested_quantity}`}
                     >

@@ -18,7 +18,7 @@ export function CategoryForm() {
         </label>
         <Input id="financeCategoryName" name="name" placeholder="Ex: Ingredientes" required />
       </div>
-      <Button type="submit" variant="outline" disabled={pending}>
+      <Button type="submit" variant="secondary" disabled={pending}>
         {pending ? "Criando..." : "Adicionar"}
       </Button>
       {state.error && <p className="text-sm text-error">{state.error}</p>}

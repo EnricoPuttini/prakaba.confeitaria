@@ -19,7 +19,7 @@ export function MarkPaidButton({
   return (
     <Button
       type="button"
-      variant="outline"
+      variant="secondary"
       size="sm"
       disabled={pending}
       onClick={() => {

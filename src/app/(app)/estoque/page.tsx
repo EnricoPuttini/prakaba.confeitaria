@@ -25,7 +25,7 @@ export default async function EstoquePage() {
       />
 
       <div className="mb-4 flex justify-end gap-2">
-        <Button asChild variant="outline">
+        <Button asChild variant="secondary">
           <Link href="/estoque/fornecedores">Fornecedores</Link>
         </Button>
         <Button asChild>

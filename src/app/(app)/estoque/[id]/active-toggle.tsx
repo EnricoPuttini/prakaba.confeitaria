@@ -12,7 +12,7 @@ export function ActiveToggle({ ingredientId, active }: { ingredientId: string; a
   return (
     <Button
       type="button"
-      variant="outline"
+      variant="secondary"
       size="sm"
       disabled={pending}
       onClick={() => {
