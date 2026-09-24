@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { NavItem } from "@/lib/navigation";
+import { NAV_ICONS } from "@/components/layout/nav-icons";
 
 export function SidebarNav({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -30,7 +31,7 @@ export function SidebarNav({ items, onNavigate }: { items: NavItem[]; onNavigate
           )}
           {group.items.map((item) => {
             const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-            const Icon = item.icon;
+            const Icon = NAV_ICONS[item.icon];
             return (
               <Link
                 key={item.href}
