@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getOrigin } from "@/lib/http/origin";
 import { loginSchema, signUpSchema } from "@/lib/validations/auth";
 
 export type AuthActionState = {
@@ -48,12 +49,14 @@ export async function signUp(
 
   const { organizationName, fullName, email, password } = parsed.data;
   const supabase = await createClient();
+  const origin = await getOrigin();
 
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: { full_name: fullName, organization_name: organizationName },
+      emailRedirectTo: `${origin}/auth/callback`,
     },
   });
 

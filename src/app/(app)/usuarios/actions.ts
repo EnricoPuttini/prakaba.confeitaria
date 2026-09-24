@@ -1,22 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { requireCurrentProfile } from "@/lib/auth/current-profile";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getOrigin } from "@/lib/http/origin";
 import { inviteSchema } from "@/lib/validations/invite";
 
 export type InviteActionState = {
   error?: string;
   success?: boolean;
 };
-
-async function getOrigin() {
-  const headerList = await headers();
-  const host = headerList.get("x-forwarded-host") ?? headerList.get("host");
-  const protocol = headerList.get("x-forwarded-proto") ?? "http";
-  return `${protocol}://${host}`;
-}
 
 export async function inviteMember(
   _prevState: InviteActionState,
@@ -50,7 +43,7 @@ export async function inviteMember(
   const admin = createAdminClient();
 
   const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
-    redirectTo: `${origin}/auth/confirm?next=/onboarding`,
+    redirectTo: `${origin}/auth/callback`,
   });
 
   if (error) {
