@@ -22,6 +22,7 @@ export type OrderStatus =
   | "CANCELADA";
 export type PaymentMethod = "PIX" | "CARTAO" | "DINHEIRO";
 export type OperationStatus = "ABERTA" | "FECHADA";
+export type ProductionStatus = "PLANEJADA" | "EM_PRODUCAO" | "CONCLUIDA" | "CANCELADA";
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
@@ -234,6 +235,7 @@ export type Database = {
           shelf_life_days: number | null;
           photo_url: string | null;
           active: boolean;
+          current_stock: number;
           created_at: string;
           updated_at: string;
         };
@@ -251,6 +253,7 @@ export type Database = {
           shelf_life_days?: number | null;
           photo_url?: string | null;
           active?: boolean;
+          current_stock?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -604,6 +607,77 @@ export type Database = {
           },
         ];
       };
+      production_orders: {
+        Row: {
+          id: string;
+          organization_id: string;
+          status: ProductionStatus;
+          planned_date: string | null;
+          notes: string | null;
+          responsible_id: string | null;
+          started_at: string | null;
+          completed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          status?: ProductionStatus;
+          planned_date?: string | null;
+          notes?: string | null;
+          responsible_id?: string | null;
+          started_at?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["production_orders"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "production_orders_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      production_items: {
+        Row: {
+          id: string;
+          production_order_id: string;
+          product_id: string;
+          planned_quantity: number;
+          produced_quantity: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          production_order_id: string;
+          product_id: string;
+          planned_quantity: number;
+          produced_quantity?: number | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["production_items"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "production_items_production_order_id_fkey";
+            columns: ["production_order_id"];
+            isOneToOne: false;
+            referencedRelation: "production_orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "production_items_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -688,6 +762,36 @@ export type Database = {
         };
         Returns: string;
       };
+      get_committed_stock: {
+        Args: { p_product_id: string };
+        Returns: number;
+      };
+      save_production_order: {
+        Args: {
+          p_order_id: string | null;
+          p_planned_date: string | null;
+          p_notes: string | null;
+          p_items: Json;
+        };
+        Returns: string;
+      };
+      complete_production_order: {
+        Args: { p_order_id: string; p_produced_quantities: Json };
+        Returns: string;
+      };
+      get_production_suggestions: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          product_id: string;
+          product_name: string;
+          reserved_demand: number;
+          avg_daily_sales: number;
+          current_stock: number;
+          committed_stock: number;
+          available_stock: number;
+          suggested_quantity: number;
+        }[];
+      };
     };
     Enums: {
       user_role: UserRole;
@@ -699,6 +803,7 @@ export type Database = {
       order_status: OrderStatus;
       payment_method: PaymentMethod;
       operation_status: OperationStatus;
+      production_status: ProductionStatus;
     };
     CompositeTypes: Record<string, never>;
   };
