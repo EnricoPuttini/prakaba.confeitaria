@@ -39,6 +39,7 @@ export async function openOperation(
     if (error.message.includes("not authorized")) {
       return { error: "Você não tem permissão para abrir uma operação." };
     }
+    console.error("[openOperation] open_operation RPC failed:", error);
     return { error: "Não foi possível abrir a operação." };
   }
 
@@ -74,6 +75,7 @@ export async function closeOperation(
     if (error.message.includes("not authorized")) {
       return { error: "Você não tem permissão para fechar a operação." };
     }
+    console.error("[closeOperation] close_operation RPC failed:", error);
     return { error: "Não foi possível fechar a operação." };
   }
 
