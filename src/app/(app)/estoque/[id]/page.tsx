@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
+import { History } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
 import { UNIT_LABELS, type unitOptions } from "@/lib/validations/units";
 import { IngredientForm } from "../ingredient-form";
 import { updateIngredient } from "../actions";
@@ -48,14 +51,23 @@ export default async function EditarItemEstoquePage({
     <>
       <PageHeader title={ingredient.name} description="Editar item de estoque." />
 
-      <div className="mb-6 flex items-center justify-between">
-        <p className="text-sm text-secondary-foreground">
-          Estoque atual:{" "}
-          <span className="font-semibold text-foreground">
-            {formatQuantity(ingredient.current_stock)}{" "}
-            {UNIT_LABELS[ingredient.unit as (typeof unitOptions)[number]]}
-          </span>
-        </p>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-secondary-foreground">
+            Estoque atual:{" "}
+            <span className="font-semibold text-foreground">
+              {formatQuantity(ingredient.current_stock)}{" "}
+              {UNIT_LABELS[ingredient.unit as (typeof unitOptions)[number]]}
+            </span>
+          </p>
+          {!ingredient.active ? (
+            <Badge tone="neutral">Inativo</Badge>
+          ) : ingredient.minimum_stock != null && ingredient.current_stock < ingredient.minimum_stock ? (
+            <Badge tone="error">Estoque baixo</Badge>
+          ) : (
+            <Badge tone="success">OK</Badge>
+          )}
+        </div>
         <ActiveToggle ingredientId={ingredient.id} active={ingredient.active} />
       </div>
 
@@ -91,41 +103,42 @@ export default async function EditarItemEstoquePage({
           <CardTitle>Histórico de movimentações</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-secondary-foreground">
-                <th className="px-6 py-3 font-medium">Data</th>
-                <th className="px-6 py-3 font-medium">Tipo</th>
-                <th className="px-6 py-3 font-medium">Quantidade</th>
-                <th className="px-6 py-3 font-medium">Motivo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {movements?.map((movement) => (
-                <tr key={movement.id} className="border-b border-border last:border-0">
-                  <td className="px-6 py-3 text-secondary-foreground">
-                    {new Date(movement.created_at).toLocaleString("pt-BR")}
-                  </td>
-                  <td className="px-6 py-3 text-foreground">
-                    {MOVEMENT_TYPE_LABELS[movement.type] ?? movement.type}
-                  </td>
-                  <td className="px-6 py-3 text-foreground">
-                    {movement.quantity > 0 ? "+" : ""}
-                    {formatQuantity(movement.quantity)}{" "}
-                    {UNIT_LABELS[movement.unit as (typeof unitOptions)[number]]}
-                  </td>
-                  <td className="px-6 py-3 text-secondary-foreground">{movement.reason ?? "—"}</td>
-                </tr>
-              ))}
-              {!movements?.length && (
-                <tr>
-                  <td className="px-6 py-6 text-secondary-foreground" colSpan={4}>
-                    Nenhuma movimentação registrada ainda.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          {movements?.length ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-secondary-foreground">
+                    <th className="px-6 py-3 font-medium">Data</th>
+                    <th className="px-6 py-3 font-medium">Tipo</th>
+                    <th className="px-6 py-3 font-medium">Quantidade</th>
+                    <th className="px-6 py-3 font-medium">Motivo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {movements.map((movement) => (
+                    <tr key={movement.id} className="border-b border-border last:border-0">
+                      <td className="px-6 py-3 text-secondary-foreground">
+                        {new Date(movement.created_at).toLocaleString("pt-BR")}
+                      </td>
+                      <td className="px-6 py-3 text-foreground">
+                        {MOVEMENT_TYPE_LABELS[movement.type] ?? movement.type}
+                      </td>
+                      <td
+                        className={`px-6 py-3 font-medium ${movement.quantity > 0 ? "text-success" : "text-error"}`}
+                      >
+                        {movement.quantity > 0 ? "+" : ""}
+                        {formatQuantity(movement.quantity)}{" "}
+                        {UNIT_LABELS[movement.unit as (typeof unitOptions)[number]]}
+                      </td>
+                      <td className="px-6 py-3 text-secondary-foreground">{movement.reason ?? "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <EmptyState icon={History} title="Nenhuma movimentação registrada ainda" />
+          )}
         </CardContent>
       </Card>
     </>

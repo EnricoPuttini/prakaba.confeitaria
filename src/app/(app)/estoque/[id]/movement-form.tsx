@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -65,7 +66,11 @@ export function MovementForm({ ingredientId, defaultUnit }: { ingredientId: stri
 
       <div className="sm:col-span-4">
         {state.error && <p className="mb-2 text-sm text-error">{state.error}</p>}
-        {state.success && <p className="mb-2 text-sm text-success">Movimentação registrada.</p>}
+        {state.success && (
+          <p className="mb-2 flex items-center gap-1.5 text-sm text-success">
+            <CheckCircle2 className="h-4 w-4" /> Movimentação registrada.
+          </p>
+        )}
         <Button type="submit" disabled={pending}>
           {pending ? "Registrando..." : "Registrar movimentação"}
         </Button>
