@@ -97,6 +97,10 @@ export type Database = {
         Args: { org_name: string; owner_full_name: string };
         Returns: string;
       };
+      accept_invitation: {
+        Args: Record<PropertyKey, never>;
+        Returns: string;
+      };
       log_audit_event: {
         Args: {
           p_entity: string;

@@ -2,6 +2,7 @@ import { requireCurrentProfile } from "@/lib/auth/current-profile";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
+import { InviteForm } from "./invite-form";
 
 const ROLE_LABELS: Record<string, string> = {
   OWNER: "Proprietária(o)",
@@ -12,7 +13,7 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 export default async function UsuariosPage() {
-  await requireCurrentProfile();
+  const profile = await requireCurrentProfile();
   const supabase = await createClient();
 
   const { data: members } = await supabase
@@ -20,12 +21,21 @@ export default async function UsuariosPage() {
     .select("id, full_name, role, active")
     .order("full_name");
 
+  const canInvite = profile.role === "OWNER" || profile.role === "MANAGER";
+
   return (
     <>
       <PageHeader
         title="Usuários"
         description="Membros da sua confeitaria e seus níveis de acesso."
       />
+
+      {canInvite && (
+        <div className="mb-6">
+          <InviteForm canInviteManager={profile.role === "OWNER"} />
+        </div>
+      )}
+
       <Card>
         <CardContent className="p-0">
           <table className="w-full text-sm">
@@ -64,8 +74,8 @@ export default async function UsuariosPage() {
         </CardContent>
       </Card>
       <p className="mt-4 text-xs text-secondary-foreground">
-        Convite de novos usuários por e-mail ainda não implementado — planejado para uma
-        próxima etapa, junto da gestão completa de permissões por papel.
+        O convite chega por e-mail e a pessoa entra direto na sua confeitaria, sem criar uma
+        organização nova.
       </p>
     </>
   );
