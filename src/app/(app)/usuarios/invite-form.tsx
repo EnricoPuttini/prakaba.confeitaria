@@ -5,6 +5,7 @@ import { inviteMember, type InviteActionState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const ROLE_OPTIONS = [
@@ -37,12 +38,7 @@ export function InviteForm({ canInviteManager }: { canInviteManager: boolean }) 
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="role">Papel</Label>
-              <select
-                id="role"
-                name="role"
-                defaultValue="SALES"
-                className="flex h-10 w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-              >
+              <Select id="role" name="role" defaultValue="SALES">
                 {ROLE_OPTIONS.filter((option) => option.value !== "MANAGER" || canInviteManager).map(
                   (option) => (
                     <option key={option.value} value={option.value}>
@@ -50,7 +46,7 @@ export function InviteForm({ canInviteManager }: { canInviteManager: boolean }) 
                     </option>
                   ),
                 )}
-              </select>
+              </Select>
             </div>
           </div>
           {state.error && <p className="text-sm text-error">{state.error}</p>}
