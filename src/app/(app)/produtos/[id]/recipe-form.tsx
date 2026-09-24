@@ -1,12 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
+import { CheckCircle2, X } from "lucide-react";
 import { saveRecipe, type RecipeActionState } from "./recipe-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { EmptyState } from "@/components/ui/empty-state";
 import { unitOptions, UNIT_LABELS } from "@/lib/validations/units";
 
 type Ingredient = { id: string; name: string; unit: string };
@@ -56,9 +59,15 @@ export function RecipeForm({
 
   if (ingredients.length === 0) {
     return (
-      <p className="text-sm text-secondary-foreground">
-        Cadastre ao menos um ingrediente no estoque antes de montar a ficha técnica.
-      </p>
+      <EmptyState
+        title="Cadastre um ingrediente primeiro"
+        description="É preciso ao menos um ingrediente ativo no estoque para montar a ficha técnica."
+        action={
+          <Button asChild variant="secondary" size="sm">
+            <Link href="/estoque/novo">Cadastrar ingrediente</Link>
+          </Button>
+        }
+      />
     );
   }
 
@@ -106,21 +115,28 @@ export function RecipeForm({
         </div>
 
         {items.length === 0 && (
-          <p className="text-sm text-secondary-foreground">Nenhum ingrediente adicionado ainda.</p>
+          <div className="rounded-md border border-dashed border-border p-4 text-center text-sm text-secondary-foreground">
+            Nenhum ingrediente adicionado ainda.
+          </div>
         )}
 
         {items.map((item, index) => (
-          <div key={index} className="grid grid-cols-[1fr_7rem_10rem_auto] items-end gap-2">
-            <Select
-              value={item.ingredientId}
-              onChange={(event) => updateItem(index, { ingredientId: event.target.value })}
-            >
-              {ingredients.map((ingredient) => (
-                <option key={ingredient.id} value={ingredient.id}>
-                  {ingredient.name}
-                </option>
-              ))}
-            </Select>
+          <div
+            key={index}
+            className="grid grid-cols-2 items-end gap-2 rounded-md border border-border p-3 sm:grid-cols-[1fr_7rem_10rem_auto] sm:border-0 sm:p-0"
+          >
+            <div className="col-span-2 sm:col-span-1">
+              <Select
+                value={item.ingredientId}
+                onChange={(event) => updateItem(index, { ingredientId: event.target.value })}
+              >
+                {ingredients.map((ingredient) => (
+                  <option key={ingredient.id} value={ingredient.id}>
+                    {ingredient.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
             <Input
               type="number"
               step="0.0001"
@@ -136,15 +152,25 @@ export function RecipeForm({
                 </option>
               ))}
             </Select>
-            <Button type="button" variant="ghost" size="sm" onClick={() => removeItem(index)}>
-              Remover
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => removeItem(index)}
+              aria-label="Remover ingrediente"
+            >
+              <X className="h-4 w-4" />
             </Button>
           </div>
         ))}
       </div>
 
       {state.error && <p className="text-sm text-error">{state.error}</p>}
-      {state.success && <p className="text-sm text-success">Ficha técnica salva.</p>}
+      {state.success && (
+        <p className="flex items-center gap-1.5 text-sm text-success">
+          <CheckCircle2 className="h-4 w-4" /> Ficha técnica salva.
+        </p>
+      )}
 
       <div>
         <Button type="submit" disabled={pending || items.length === 0}>

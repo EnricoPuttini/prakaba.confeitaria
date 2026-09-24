@@ -11,6 +11,13 @@ function formatCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+function marginTone(marginPercent: number | null) {
+  if (marginPercent == null) return "text-foreground";
+  if (marginPercent < 0) return "text-error";
+  if (marginPercent < 20) return "text-warning";
+  return "text-success";
+}
+
 export default async function EditarProdutoPage({
   params,
 }: {
@@ -45,27 +52,29 @@ export default async function EditarProdutoPage({
           <CardHeader>
             <CardTitle>Custo e margem</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-3 gap-4 text-sm">
-            <div>
-              <p className="text-secondary-foreground">Custo por unidade</p>
-              <p className="text-lg font-semibold text-foreground">
-                {cost != null ? formatCurrency(cost) : "—"}
-              </p>
-            </div>
-            <div>
-              <p className="text-secondary-foreground">Margem</p>
-              <p className="text-lg font-semibold text-foreground">
-                {margin != null ? formatCurrency(margin) : "—"}
-              </p>
-            </div>
-            <div>
-              <p className="text-secondary-foreground">Margem (%)</p>
-              <p className="text-lg font-semibold text-foreground">
-                {marginPercent != null ? `${marginPercent.toFixed(1)}%` : "—"}
-              </p>
+          <CardContent className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 divide-y divide-border rounded-md border border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+              <div className="p-4">
+                <p className="text-sm text-secondary-foreground">Custo por unidade</p>
+                <p className="text-lg font-semibold text-foreground">
+                  {cost != null ? formatCurrency(cost) : "—"}
+                </p>
+              </div>
+              <div className="p-4">
+                <p className="text-sm text-secondary-foreground">Margem</p>
+                <p className={`text-lg font-semibold ${marginTone(marginPercent)}`}>
+                  {margin != null ? formatCurrency(margin) : "—"}
+                </p>
+              </div>
+              <div className="p-4">
+                <p className="text-sm text-secondary-foreground">Margem (%)</p>
+                <p className={`text-lg font-semibold ${marginTone(marginPercent)}`}>
+                  {marginPercent != null ? `${marginPercent.toFixed(1)}%` : "—"}
+                </p>
+              </div>
             </div>
             {cost == null && (
-              <p className="col-span-3 text-xs text-secondary-foreground">
+              <p className="text-xs text-secondary-foreground">
                 Cadastre a ficha técnica abaixo para calcular o custo automaticamente.
               </p>
             )}
