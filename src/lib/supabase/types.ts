@@ -23,6 +23,7 @@ export type OrderStatus =
 export type PaymentMethod = "PIX" | "CARTAO" | "DINHEIRO";
 export type OperationStatus = "ABERTA" | "FECHADA";
 export type ProductionStatus = "PLANEJADA" | "EM_PRODUCAO" | "CONCLUIDA" | "CANCELADA";
+export type FinancialStatus = "PENDENTE" | "PAGO";
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
@@ -674,6 +675,140 @@ export type Database = {
             columns: ["product_id"];
             isOneToOne: false;
             referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      financial_categories: {
+        Row: {
+          id: string;
+          organization_id: string;
+          name: string;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          name: string;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["financial_categories"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "financial_categories_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      accounts_payable: {
+        Row: {
+          id: string;
+          organization_id: string;
+          description: string;
+          supplier_id: string | null;
+          category_id: string | null;
+          amount: number;
+          due_date: string;
+          paid_at: string | null;
+          status: FinancialStatus;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          description: string;
+          supplier_id?: string | null;
+          category_id?: string | null;
+          amount: number;
+          due_date: string;
+          paid_at?: string | null;
+          status?: FinancialStatus;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["accounts_payable"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "accounts_payable_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "accounts_payable_supplier_id_fkey";
+            columns: ["supplier_id"];
+            isOneToOne: false;
+            referencedRelation: "suppliers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "accounts_payable_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "financial_categories";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      accounts_receivable: {
+        Row: {
+          id: string;
+          organization_id: string;
+          description: string;
+          customer_id: string | null;
+          order_id: string | null;
+          amount: number;
+          due_date: string | null;
+          paid_at: string | null;
+          payment_method: PaymentMethod | null;
+          status: FinancialStatus;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          description: string;
+          customer_id?: string | null;
+          order_id?: string | null;
+          amount: number;
+          due_date?: string | null;
+          paid_at?: string | null;
+          payment_method?: PaymentMethod | null;
+          status?: FinancialStatus;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["accounts_receivable"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "accounts_receivable_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "accounts_receivable_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "accounts_receivable_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
             referencedColumns: ["id"];
           },
         ];
