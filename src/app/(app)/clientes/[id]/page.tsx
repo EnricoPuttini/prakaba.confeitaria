@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ShoppingBag } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge, type badgeVariants } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/empty-state";
+import type { VariantProps } from "class-variance-authority";
 import { CustomerForm } from "../customer-form";
 import { updateCustomer } from "../actions";
 import { ActiveToggle } from "./active-toggle";
@@ -14,6 +18,15 @@ const STATUS_LABELS: Record<string, string> = {
   PRONTA: "Pronta",
   ENTREGUE: "Entregue",
   CANCELADA: "Cancelada",
+};
+
+const STATUS_TONES: Record<string, NonNullable<VariantProps<typeof badgeVariants>["tone"]>> = {
+  PENDENTE: "neutral",
+  CONFIRMADA: "primary",
+  EM_PRODUCAO: "warning",
+  PRONTA: "warning",
+  ENTREGUE: "success",
+  CANCELADA: "error",
 };
 
 function formatCurrency(value: number) {
@@ -58,20 +71,22 @@ export default async function EditarClientePage({
           <CardHeader>
             <CardTitle>Histórico</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-3 gap-4 text-sm">
-            <div>
-              <p className="text-secondary-foreground">Pedidos</p>
-              <p className="text-lg font-semibold text-foreground">{validOrders.length}</p>
-            </div>
-            <div>
-              <p className="text-secondary-foreground">Total gasto</p>
-              <p className="text-lg font-semibold text-foreground">{formatCurrency(totalSpent)}</p>
-            </div>
-            <div>
-              <p className="text-secondary-foreground">Última compra</p>
-              <p className="text-lg font-semibold text-foreground">
-                {lastPurchase ? new Date(lastPurchase).toLocaleDateString("pt-BR") : "—"}
-              </p>
+          <CardContent>
+            <div className="grid grid-cols-1 divide-y divide-border rounded-md border border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+              <div className="p-4">
+                <p className="text-sm text-secondary-foreground">Pedidos</p>
+                <p className="text-lg font-semibold text-foreground">{validOrders.length}</p>
+              </div>
+              <div className="p-4">
+                <p className="text-sm text-secondary-foreground">Total gasto</p>
+                <p className="text-lg font-semibold text-foreground">{formatCurrency(totalSpent)}</p>
+              </div>
+              <div className="p-4">
+                <p className="text-sm text-secondary-foreground">Última compra</p>
+                <p className="text-lg font-semibold text-foreground">
+                  {lastPurchase ? new Date(lastPurchase).toLocaleDateString("pt-BR") : "—"}
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -96,44 +111,45 @@ export default async function EditarClientePage({
           <CardTitle>Pedidos</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-secondary-foreground">
-                <th className="px-6 py-3 font-medium">Número</th>
-                <th className="px-6 py-3 font-medium">Data</th>
-                <th className="px-6 py-3 font-medium">Status</th>
-                <th className="px-6 py-3 font-medium">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders?.map((order) => (
-                <tr key={order.id} className="border-b border-border last:border-0">
-                  <td className="px-6 py-3">
-                    <Link
-                      href={`/reservas/${order.id}`}
-                      className="font-medium text-foreground hover:text-primary hover:underline"
-                    >
-                      #{order.order_number}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-3 text-secondary-foreground">
-                    {new Date(order.order_date).toLocaleDateString("pt-BR")}
-                  </td>
-                  <td className="px-6 py-3 text-foreground">
-                    {STATUS_LABELS[order.status] ?? order.status}
-                  </td>
-                  <td className="px-6 py-3 text-foreground">{formatCurrency(order.total)}</td>
-                </tr>
-              ))}
-              {!orders?.length && (
-                <tr>
-                  <td className="px-6 py-6 text-secondary-foreground" colSpan={4}>
-                    Nenhum pedido ainda.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          {orders?.length ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-secondary-foreground">
+                    <th className="px-6 py-3 font-medium">Número</th>
+                    <th className="px-6 py-3 font-medium">Data</th>
+                    <th className="px-6 py-3 font-medium">Status</th>
+                    <th className="px-6 py-3 font-medium">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.map((order) => (
+                    <tr key={order.id} className="border-b border-border last:border-0 hover:bg-surface-muted">
+                      <td className="px-6 py-3">
+                        <Link
+                          href={`/reservas/${order.id}`}
+                          className="font-medium text-foreground hover:text-primary hover:underline"
+                        >
+                          #{order.order_number}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-3 text-secondary-foreground">
+                        {new Date(order.order_date).toLocaleDateString("pt-BR")}
+                      </td>
+                      <td className="px-6 py-3">
+                        <Badge tone={STATUS_TONES[order.status] ?? "neutral"}>
+                          {STATUS_LABELS[order.status] ?? order.status}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-3 text-foreground">{formatCurrency(order.total)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <EmptyState icon={ShoppingBag} title="Nenhum pedido ainda" />
+          )}
         </CardContent>
       </Card>
     </>
